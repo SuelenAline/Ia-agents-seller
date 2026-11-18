@@ -1,0 +1,50 @@
+{
+  "name": "seller-agents-ai",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "build": "npm run build -w packages/domain && npm run build -w apps/api && npm run build -w apps/web",
+    "lint": "tsc --noEmit -p packages/domain && tsc --noEmit -p apps/api && tsc --noEmit -p apps/web",
+    "test": "jest --runInBand",
+    "test:e2e": "playwright test",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.2.8",
+    "@nestjs/core": "^11.2.8",
+    "@nestjs/platform-express": "^11.2.8",
+    "@playwright/test": "^1.56.0",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.0",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.10",
+    "prisma": "6.19.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "multer": "^2.5.0",
+    "deepmerge-ts": "^8.0.2",
+    "effect": "^3.20.0",
+    "rimraf": {
+      "glob": "^14.0.4",
+      "minimatch": "^11.0.5"
+    }
+  }
+}

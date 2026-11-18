@@ -1,0 +1,15 @@
+{
+  "mode": "REAL",
+  "clientId": "4807670040198119",
+  "clientSecretConfigured": true,
+  "oauthStartStatus": 200,
+  "oauthStateValidated": true,
+  "secretNotExposedInAuthorizationUrl": true,
+  "redirectUri": "http://localhost:4000/integrations/ml/callback",
+  "connected": false,
+  "listingRead": {
+    "status": 503,
+    "message": "Conta não conectada"
+  },
+  "credentialValidity": "NOT_VERIFIED_REQUIRES_USER_OAUTH"
+}

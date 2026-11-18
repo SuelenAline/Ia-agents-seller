@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: seller
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-seller_local}
+      POSTGRES_DB: seller
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seller -d seller"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  migrate:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://seller:${POSTGRES_PASSWORD:-seller_local}@postgres:5432/seller
+    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+    depends_on:
+      postgres: { condition: service_healthy }
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://seller:${POSTGRES_PASSWORD:-seller_local}@postgres:5432/seller
+      MOCK_MODE: ${MOCK_MODE:-true}
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-demo-seller-2026}
+      WEB_ORIGIN: http://localhost:3000
+      TOKEN_ENCRYPTION_KEY: ${TOKEN_ENCRYPTION_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      ML_CLIENT_ID: ${ML_CLIENT_ID:-}
+      ML_CLIENT_SECRET: ${ML_CLIENT_SECRET:-}
+      ML_REDIRECT_URI: ${ML_REDIRECT_URI:-http://localhost:4000/integrations/ml/callback}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+    ports: ["127.0.0.1:4000:4000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+  web:
+    build: .
+    command: ["npm", "run", "start", "-w", "apps/web"]
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [api]
+volumes:
+  pgdata:
